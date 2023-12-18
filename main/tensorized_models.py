@@ -71,7 +71,7 @@ def masked_full(tt_weight, masks=None):
         res = res.contiguous().view(*shape)
     else:
         res = res.view(*shape)
-        
+
     return res
 
 
@@ -85,8 +85,8 @@ class TensorizedModel(nn.Module):
         self._ranks = None
         self._cores = None
         self._total = None
-        
-    def __str__(self): 
+
+    def __str__(self):
         return "Abstract tensorized model"
 
     @property
@@ -112,7 +112,7 @@ class FactorizedLinear(TensorizedModel):
         self.in_features = in_features
         self.out_features = out_features
         self._ranks = _single(rank)
-        
+
         self.input_weight = nn.Parameter(torch.Tensor(self.ranks[0], self.in_features))
         self.output_weight = nn.Parameter(torch.Tensor(self.out_features, self.ranks[0]))
         self.bias = nn.Parameter(torch.Tensor(self.out_features))
@@ -120,11 +120,11 @@ class FactorizedLinear(TensorizedModel):
 
         self._cores = [self.input_weight, self.output_weight]
         self._total = self.in_features * self.out_features
-        
-    def __str__(self): 
-        str_from = str([self.in_features, self.out_features]) 
+
+    def __str__(self):
+        str_from = str([self.in_features, self.out_features])
         str_to1 = str([self.in_features, self.ranks[0]])
-        str_to2 = str([self.ranks[0], self.out_features]) 
+        str_to2 = str([self.ranks[0], self.out_features])
         return "Factorized Linear: " + str_from + ' -> ' + str_to1 + '-' + str_to2
 
     def calc_dof(self, ranks=None):
@@ -148,7 +148,7 @@ class FactorizedLinear(TensorizedModel):
         if masks is not None and self.training:
             x *= masks[0]
         return F.linear(x, output_weight, self.bias)
-        
+
 
 class TuckerConv2d(TensorizedModel):
     def __init__(self, in_channels, out_channels, kernel_size, rank=32, stride=1, padding=0):
@@ -159,7 +159,7 @@ class TuckerConv2d(TensorizedModel):
         self._ranks = _pair(rank)
         self.stride = stride
         self.padding = padding
-        
+
         self.first_weight = nn.Parameter(torch.Tensor(self.ranks[0], self.in_channels, 1, 1))
         self.core_weight = nn.Parameter(torch.Tensor(self.ranks[1], self.ranks[0], *self.kernel_size))
         self.last_weight = nn.Parameter(torch.Tensor(self.out_channels, self.ranks[1], 1, 1))
@@ -168,12 +168,12 @@ class TuckerConv2d(TensorizedModel):
 
         self._cores = [self.first_weight, self.core_weight, self.last_weight]
         self._total = self.in_channels * self.out_channels * np.prod(self.kernel_size)
-        
-    def __str__(self): 
-        str_from = str([self.in_channels, self.out_channels, *self.kernel_size]) 
-        str_to1 = str([self.in_channels, self.ranks[0]]) 
-        str_to2 = str([self.ranks[0], self.ranks[1], *self.kernel_size]) 
-        str_to3 = str([self.ranks[1], self.out_channels]) 
+
+    def __str__(self):
+        str_from = str([self.in_channels, self.out_channels, *self.kernel_size])
+        str_to1 = str([self.in_channels, self.ranks[0]])
+        str_to2 = str([self.ranks[0], self.ranks[1], *self.kernel_size])
+        str_to3 = str([self.ranks[1], self.out_channels])
         return "Tucker Conv2d: " + str_from + ' -> ' + str_to1 + '-' + str_to2 + '-' + str_to3
 
     def calc_dof(self, ranks=None):
@@ -209,8 +209,8 @@ class TuckerConv2d(TensorizedModel):
 
 class TTLinear(TensorizedModel):
     # Partially borrowed from https://github.com/KhrulkovV/tt-pytorch
-    def __init__(self, in_features=None, out_features=None, bias=True, 
-                 init=None, shape=None, auto_shapes=True, d=3, tt_rank=8, 
+    def __init__(self, in_features=None, out_features=None, bias=True,
+                 init=None, shape=None, auto_shapes=True, d=3, tt_rank=8,
                  auto_shape_mode='ascending', auto_shape_criterion='entropy'):
         super(TTLinear, self).__init__()
 
@@ -249,7 +249,7 @@ class TTLinear(TensorizedModel):
         self._ranks = self.tt_weight.ranks[1:-1]
         self._total = self.tt_weight.total
 
-    def __str__(self): 
+    def __str__(self):
         s = str(self.tt_weight)
         s = s[:1].lower() + s[1:]
         return "TT Linear with " + s
@@ -272,14 +272,14 @@ class TTLinear(TensorizedModel):
         res = self.mm_op(x, tt_weight, masks)
         if self.bias is not None:
             res += self.bias
-        
+
         return res
 
 
 class TTEmbedding(TensorizedModel):
     # Partially borrowed from https://github.com/KhrulkovV/tt-pytorch
     def __init__(self, voc_size, emb_size,
-                 init=None, shape=None, 
+                 init=None, shape=None,
                  auto_shapes=None,
                  auto_shape_mode='ascending',
                  auto_shape_criterion='entropy',
@@ -326,7 +326,7 @@ class TTEmbedding(TensorizedModel):
         self._ranks = self.tt_weight.ranks[1:-1]
         self._total = self.voc_size * self.emb_size  # we need to compare against initial size
 
-    def __str__(self): 
+    def __str__(self):
         s = str(self.tt_weight)
         s = s[:1].lower() + s[1:]
         return "TT Embedding with " + s
@@ -364,8 +364,8 @@ class TTEmbedding(TensorizedModel):
 class TTConv2d(TensorizedModel):
     # Partially borrowed from https://github.com/KhrulkovV/tt-pytorch
     def __init__(self, in_channels=None, out_channels=None, kernel_size=None,
-                 stride=1, padding=0, dilation=1, bias=True, init=None, 
-                 shape=None, auto_shapes=True, d=3, tt_rank=8, 
+                 stride=1, padding=0, dilation=1, bias=True, init=None,
+                 shape=None, auto_shapes=True, d=3, tt_rank=8,
                  auto_shape_mode='ascending', auto_shape_criterion='entropy'):
         super(TTConv2d, self).__init__()
 
@@ -404,7 +404,7 @@ class TTConv2d(TensorizedModel):
         self.stride = stride
         self.padding = padding
         self.dilation = dilation
-        
+
         self.shape = shape
         self.tt_weight = init.to_parameter()
         self.parameters = self.tt_weight.parameter
@@ -418,7 +418,7 @@ class TTConv2d(TensorizedModel):
         self._ranks = self.tt_weight.ranks[1:-1]
         self._total = self.tt_weight.total
 
-    def __str__(self): 
+    def __str__(self):
         s = str(self.tt_weight)
         s = s[:1].lower() + s[1:]
         return "TT Conv2d with " + s
