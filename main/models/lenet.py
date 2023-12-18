@@ -21,8 +21,8 @@ class LeNet(nn.Module):
         ) if config.mars_enabled else nn.Conv2d(6, 16, 5)
         self.fc1 = MARS(
             FactorizedLinear(
-                in_channels=16 * 5 * 5,
-                out_channels=120,
+                in_features=16 * 5 * 5,
+                out_features=120,
                 rank=100
             ),
             pi=pi,

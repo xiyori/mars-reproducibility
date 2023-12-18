@@ -427,7 +427,10 @@ class TTConv2d(TensorizedModel):
         if ranks is None:
             return self.tt_weight.dof
         ranks = [1] + ranks + [1]
-        return sum([ranks[r] * self.shape[0][r] * self.shape[1][r] * ranks[r + 1] for r in range(len(self.cores))])
+        return sum([ranks[r] *
+                    (1 if self.shape[0] is None else self.shape[0][r]) *
+                    (1 if self.shape[1] is None else self.shape[1][r]) *
+                    ranks[r + 1] for r in range(len(self.cores))])
 
     def forward(self, x, masks=None, tt_weight=None):
         if not self.training and masks is not None:
