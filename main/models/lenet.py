@@ -8,26 +8,26 @@ from tensorized_models import TuckerConv2d, FactorizedLinear
 class LeNet(nn.Module):
     def __init__(self, config, pi: float, alpha: float):
         super().__init__()
-        self.conv1 = nn.Conv2d(1, 6, 5, padding=2)
+        self.conv1 = nn.Conv2d(1, 64, 5, padding=2)
         self.conv2 = MARS(
             TuckerConv2d(
-                in_channels=6,
-                out_channels=16,
+                in_channels=64,
+                out_channels=128,
                 kernel_size=5,
                 rank=20
             ),
             pi=pi,
             alpha=alpha
-        ) if config.mars_enabled else nn.Conv2d(6, 16, 5)
+        ) if config.mars_enabled else nn.Conv2d(64, 128, 5)
         self.fc1 = MARS(
             FactorizedLinear(
-                in_features=16 * 5 * 5,
+                in_features=128 * 5 * 5,
                 out_features=120,
-                rank=100
+                rank=20
             ),
             pi=pi,
             alpha=alpha
-        ) if config.mars_enabled else nn.Linear(16 * 5 * 5, 120)
+        ) if config.mars_enabled else nn.Linear(128 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 10)
 
     def forward(self, x):
