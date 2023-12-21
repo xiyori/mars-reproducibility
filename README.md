@@ -17,8 +17,13 @@ System requirements and dependencies are described in https://github.com/Khrulko
 After installing all the dependencies, run the following command to install tt-pytorch from Git via pip: `pip install git+https://github.com/KhrulkovV/tt-pytorch.git`
 
 Our team:
+
 @sspetya - Petr Sychev
+
 @gurkwe - Petr Kushnir
+
 @xiyori - Foma Shipilov
+
 @MarioAuditore - Elfat Sabitov
+
 @skushneryuk - Sergey Kushneryuk
