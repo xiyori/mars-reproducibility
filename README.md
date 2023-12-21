@@ -11,6 +11,19 @@ The main files are:
 The notebooks are:
 * MNIST-2FC-soft.ipynb &mdash; Jupyter Notebook, replicating the MNIST 2FC-Net experiment using soft compression mode;
 * MNIST-2FC-hard.ipynb &mdash; Jupyter Notebook, replicating the MNIST 2FC-Net experiment using hard compression mode.
+* VAE-AE-Baseline.ipynb &mdash; autoencoder and variational autoencoder template of baseline for further experiments
+  
+* MNIST-AE.ipynb &mdash; Jupyter Notebook, Factorized autoencoder
+* MNIST-VAE.ipynb &mdash; Jupyter Notebook, Factorized variational autoencoder
+* MNIST-VAE-TT.ipynb &mdash; Jupyter Notebook, Successful application of tensor train to variational autoencoder
+  
+* CIFAR10-ResNet-naive.ipynb &mdash; Jupyter Notebook, ResNet-110 on CIFAR10
+* CIFAR10-ResNet-base.ipynb &mdash; Jupyter Notebook, ResNet-110 on CIFAR10
+* CIFAR10-ResNet-proper.ipynb &mdash; Jupyter Notebook, ResNet-110 on CIFAR10
+
+* MNIST-LeNet-base.ipynb &mdash; Jupyter Notebook, LeNet-5 on MNIST
+* MNIST-LeNet-compress.ipynb &mdash; Jupyter Notebook, LeNet-5 on MNIST
+  
 
 To run the notebooks, first, install the tt-pytorch library from https://github.com/KhrulkovV/tt-pytorch  
 System requirements and dependencies are described in https://github.com/KhrulkovV/tt-pytorch/blob/master/README.md  
